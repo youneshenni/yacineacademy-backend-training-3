@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youneshenni/yacineacademy-backend-training-3.git"
+  },
+  "author": "Younes HENNI",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/youneshenni/yacineacademy-backend-training-3/issues"
+  },
+  "homepage": "https://github.com/youneshenni/yacineacademy-backend-training-3#readme"
+}
