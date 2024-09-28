@@ -1,6 +1,8 @@
 import express from "express";
-
+import { writeFile } from "fs/promises";
 const app = express();
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.status(200).send("Hello World!");
@@ -15,9 +17,12 @@ app.post("/contact", (req, res) => {
 });
 
 app.get("/page1.html", (req, res) => {
-  res
-    .status(200)
-    .send("Page 1" + req.socket.remoteAddress + req.socket.remoteFamily);
+  res.status(200).send(req.socket.remoteAddress);
+});
+
+app.post("/info", async (req, res) => {
+  writeFile("users.json", JSON.stringify(req.body));
+  res.status(200).render("info.ejs", req.body);
 });
 
 app.use(express.static("public"));

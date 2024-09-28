@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/youneshenni/yacineacademy-backend-training-3#readme",
   "dependencies": {
+    "ejs": "^3.1.10",
     "express": "^4.21.0"
   }
 }
