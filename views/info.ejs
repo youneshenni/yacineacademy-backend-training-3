@@ -1,2 +1,10 @@
-<h1>User: <%= nom %> <%= prenom %></h1>
-<h2>Email: <%= email %></h2>
+<h1>User: <%= nom %>
+        <%= prenom %>
+</h1>
+<h2>Email: <%= email %>
+</h2>
+<script>
+    setTimeout(() => {
+        window.location.href = '/users';
+    }, 5000);
+</script>
