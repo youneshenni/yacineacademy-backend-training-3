@@ -19,6 +19,8 @@
   "homepage": "https://github.com/youneshenni/yacineacademy-backend-training-3#readme",
   "dependencies": {
     "ejs": "^3.1.10",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "morgan": "^1.10.0",
+    "winston": "^3.15.0"
   }
 }
