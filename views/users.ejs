@@ -18,28 +18,25 @@
             </tr>
         </thead>
         <tbody>
+            <% users.forEach(user=> {
+                %>
+                <tr>
+                    <td>
+                        <%= user.nom %>
+                    </td>
+                    <td>
+                        <%= user.prenom %>
+                    </td>
+                    <td>
+                        <%= user.email %>
+                    </td>
+                </tr>
+                <% }); %>
         </tbody>
     </table>
 </body>
 <script>
-    fetch('/users')
-        .then(response => response.json())
-        .then(data => {
-            const tbody = document.querySelector('tbody');
-            data.forEach(user => {
-                const tr = document.createElement('tr');
-                const tdNom = document.createElement('td');
-                tdNom.textContent = user.nom;
-                const tdPrenom = document.createElement('td');
-                tdPrenom.textContent = user.prenom;
-                const tdEmail = document.createElement('td');
-                tdEmail.textContent = user.email;
-                tr.appendChild(tdNom);
-                tr.appendChild(tdPrenom);
-                tr.appendChild(tdEmail);
-                tbody.appendChild(tr);
-            });
-        });
+
 </script>
 
 </html>
