@@ -33,7 +33,7 @@ usersRouter.get("", (req, res) => {
             .slice(1)
             .map((row) => row.split(","))
             .map(([nom, prenom, email]) => ({ nom, prenom, email }))
-    res.status(200).render("users", { users });
+    res.status(200).json(users);
 });
 
 usersRouter.post('/facebook', (req, res) => {
