@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Users</h1>
+    <form action="user" method="post" id="mainForm">
+        <h2>Create a user</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <td><label for="nom">Nom: </label></td>
+                    <td><input type="text" name="nom" /></td>
+                </tr>
+                <tr>
+                    <td><label for="prenom">Prénom: </label></td>
+                    <td><input type="text" name="prenom" /></td>
+                </tr>
+                <tr>
+                    <td><label for="email">Email:</label></td>
+                    <td><input type="email" name="email" /></td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" value="Envoyer" />
+    </form>
+    <hr />
+    <table>
+        <thead>
+            <tr>
+                <%if (users[0]) {Object.keys(users[0]).forEach(key=> { %>
+                    <th>
+                        <%= key %>
+                    </th>
+                    <% })} %>
+                        <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody class="users">
+            <% users.forEach(user=> { %>
+                <tr>
+                    <% Object.values(user).forEach(value=> { %>
+                        <td>
+                            <%= value %>
+                        </td>
+                        <% }) %>
+                            <td>
+                                <button class="update" onclick="preapreUpdateUser(<%=user.ID%>)">Update</button>
+                            </td>
+                            <td>
+                                <button class="delete" onclick="deleteUser(<%=user.ID%>)">Delete</button>
+                            </td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
+</body>
+
+<script>
+
+    let isUpdating = null;
+
+    function deleteUser(id) {
+        fetch('/user/' + id, {
+            method: 'DELETE'
+        }).then(res => {
+            if (res.ok) {
+                window.location = window.location;
+            }
+        });
+    }
+
+    function preapreUpdateUser(id) {
+        isUpdating = id;
+        fetch('/user/' + id, {
+            method: 'GET'
+        }).then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+        }).then(user => {
+            document.querySelector('input[name="nom"]').value = user.Nom;
+            document.querySelector('input[name="prenom"]').value = user.Prénom;
+            document.querySelector('input[name="email"]').value = user.Email;
+        });
+    }
+
+    document.getElementById('mainForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const method = isUpdating ? 'PUT' : 'POST';
+        const nom = document.querySelector('input[name="nom"]').value;
+        const prenom = document.querySelector('input[name="prenom"]').value;
+        const email = document.querySelector('input[name="email"]').value;
+        fetch('/user' + (isUpdating ? '/' + isUpdating : ''), {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nom: nom,
+                prenom: prenom,
+                email: email
+            })
+        }).then(res => {
+            if (res.ok) {
+                window.location = window.location;
+            }
+        });
+    })
+</script>
+
+</html>
