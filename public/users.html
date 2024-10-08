@@ -9,6 +9,27 @@
 
 <body>
     <h1>Users</h1>
+    <form action="user" method="post">
+        <h2>Create a user</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <td><label for="nom">Nom: </label></td>
+                    <td><input type="text" name="nom" /></td>
+                </tr>
+                <tr>
+                    <td><label for="prenom">Prénom: </label></td>
+                    <td><input type="text" name="prenom" /></td>
+                </tr>
+                <tr>
+                    <td><label for="email">Email:</label></td>
+                    <td><input type="email" name="email" /></td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" value="Envoyer" />
+    </form>
+    <hr />
     <table>
         <thead>
             <tr>
@@ -17,7 +38,7 @@
                 <th>E-mail</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="users">
         </tbody>
     </table>
 </body>
@@ -25,7 +46,7 @@
     fetch('/user')
         .then(response => response.json())
         .then(data => {
-            const tbody = document.querySelector('tbody');
+            const tbody = document.querySelector('tbody.users');
             data.forEach(user => {
                 const tr = document.createElement('tr');
                 const tdNom = document.createElement('td');
