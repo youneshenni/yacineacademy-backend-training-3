@@ -48,6 +48,17 @@
         <thead></thead>
         <tbody></tbody>
     </table>
+
+    <form>
+        <fieldset>
+            <legend id="languageLegend">Choose langauge</legend>
+            <select name="language" id="language">
+                <option value="en-US">English</option>
+                <option value="fr-FR">Français</option>
+                <option value="ar-DZ">العربية</option>
+            </select>
+        </fieldset>
+    </form>
 </body>
 <script>
     function getData() {
@@ -142,6 +153,24 @@
     })
 
     getData();
+
+    document.getElementById('language').addEventListener('change', e => {
+        fetch('/language', {
+            method: "POST", body: JSON.stringify({ language: e.target.value }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            const translations = {
+                'en-US': 'Choose language',
+                'fr-FR': "Choisissez votre langue",
+                'ar-DZ': "اختيار اللغة"
+            }
+            const chosenLanguage = document.cookie.split(';').find(x => x.startsWith('language'))?.split('=')[1];
+
+            document.getElementById('languageLegend').innerText = translations[chosenLanguage];
+        })
+    })
 </script>
 
 </html>
