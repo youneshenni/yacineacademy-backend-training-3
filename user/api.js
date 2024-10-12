@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
 import {
     readFileSync, existsSync, writeFileSync, appendFileSync
 } from 'fs';
@@ -19,16 +19,11 @@ usersRouter.post('', (req, res) => {
     const autoIncrementer = new AutoIncrementer("users");
     const newRowId = autoIncrementer.increment();
     const appendedLine = `\n${newRowId},${req.body.nom},${req.body.prenom},${req.body.email}`;
-    const users = parseCsv(readFileSync("./data.csv").toString() + appendedLine);
     appendFileSync(
         "./data.csv",
         appendedLine
     );
-    Logger.info(req.body);
-
-    console.log()
-
-    res.status(200).render('users', { users });
+    res.status(201).send("Created");
 })
 
 
@@ -36,9 +31,8 @@ usersRouter.get("", (req, res) => {
     if (!existsSync("./data.csv"))
         writeFileSync("./data.csv", "ID,Nom,Prénom,Email");
     const csvBuffer = readFileSync("./data.csv");
-    res.status(200).render('users', { users: parseCsv(csvBuffer.toString()) });
+    res.status(200).json(parseCsv(csvBuffer.toString()));
 });
-
 usersRouter.delete('/:id', (req, res) => {
     const id = req.params.id;
     const users = parseCsv(readFileSync("./data.csv").toString());
@@ -47,7 +41,7 @@ usersRouter.delete('/:id', (req, res) => {
     filteredUsers.forEach(user => {
         appendFileSync("./data.csv", `\n${user.ID},${user.Nom},${user.Prénom},${user.Email}`);
     });
-    res.status(200).send('OK');
+    res.status(204).send('Deleted');
 })
 
 usersRouter.get('/:id', (req, res) => {

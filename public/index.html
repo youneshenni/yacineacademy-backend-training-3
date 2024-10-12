@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+        td:not(:first-child) {
+            padding-left: 16px
+        }
+    </style>
+</head>
+
+<body>
+    <form id="submitForm">
+        <fieldset>
+            <legend>Nouvel utilisateur</legend>
+            <table>
+                <tr>
+                    <td><label for="name">Nom</label></td>
+                    <td class="column-gap"></td>
+                    <td><input type="text" name="nom" id="name" /></td>
+                </tr>
+                <tr>
+                    <td><label for="firstName">Prénom</label></td>
+                    <td class="column-gap"></td>
+                    <td><input type="text" name="prenom" id="firstName" /></td>
+                </tr>
+                <tr>
+                    <td><label for="email">E-mail</label></td>
+                    <td class="column-gap"></td>
+                    <td><input type="text" name="email" id="email" /></td>
+                </tr>
+                <tr>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td><input type="submit" value="Envoyer" /></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </form>
+    <table id="data">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</body>
+<script>
+    function getData() {
+        fetch('/user').then(res => res.json()).then(data => {
+            const table = document.getElementById('data');
+            const thead = table.children[0];
+            const tbody = table.children[1];
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+            if (data[0]) {
+                Object.keys(data[0]).map(key => {
+                    const td = document.createElement('td');
+                    td.innerText = key;
+                    thead.appendChild(td);
+                });
+
+                data.map(row => {
+                    const tr = document.createElement('tr');
+                    Object.values(row).map(value => {
+                        const td = document.createElement('td');
+                        td.innerText = value;
+                        tr.appendChild(td);
+                    })
+                    const updateTd = document.createElement('td');
+                    const updateButton = document.createElement('button');
+                    updateButton.innerText = 'Modifier';
+                    updateButton.addEventListener('click', () => {
+                        const [id, nom, prenom, email] = [...Array(4)].map((_, i) => tr.children[i].innerText);
+                        [...Array(3)].map((_, i) => {
+                            const input = document.createElement('input');
+                            input.value = [nom, prenom, email][i];
+                            input.name = ['nom', 'prenom', 'email'][i];
+                            tr.children[i + 1].innerHTML = '';
+                            tr.children[i + 1].appendChild(input);
+                        })
+                        const submitButton = document.createElement('button');
+                        submitButton.innerText = 'Envoyer';
+                        submitButton.addEventListener('click', () => {
+                            const [nom, prenom, email] = [...Array(3)].map((_, i) => tr.children[i + 1].children[0].value);
+                            const jsonData = JSON.stringify({
+                                nom,
+                                prenom,
+                                email
+                            });
+                            fetch(`/user/${id}`, {
+                                method: 'PUT',
+                                body: jsonData,
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            }).then(res => res.status === 200 && getData())
+                        })
+
+                        tr.children[4].appendChild(submitButton);
+                        updateButton.style.display = "none";
+
+
+                    })
+                    updateTd.appendChild(updateButton);
+                    tr.appendChild(updateTd);
+                    const deleteTd = document.createElement('td');
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerText = 'Supprimer';
+                    deleteButton.addEventListener('click', () => {
+                        fetch(`/user/${row.ID}`, {
+                            method: 'DELETE'
+                        }).then(res => res.status === 204 && getData())
+                    })
+                    deleteTd.appendChild(deleteButton);
+                    tr.appendChild(deleteTd);
+                    tbody.appendChild(tr);
+                })
+            }
+        })
+
+    }
+
+
+    const form = document.getElementById('submitForm');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        // Send data in FormData format
+        const jsonData = JSON.stringify(Object.fromEntries(formData));
+        fetch('/user', {
+            method: 'POST',
+            body: jsonData,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.status === 201 && getData())
+    })
+
+    getData();
+</script>
+
+</html>
