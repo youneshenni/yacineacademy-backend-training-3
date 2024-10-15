@@ -4,6 +4,7 @@ import morganMiddleware from "./util/log/morgan.js";
 import Logger from "./util/log/winston.js";
 import cookieParser from 'cookie-parser';
 import { languageMiddleware, languageEndpoint } from "./middleware/language.js";
+import authRouter from "./auth/api.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.set("view engine", "ejs");
 
 app.use('/user', userRouter);
 
+app.use('/auth', authRouter);
 app.use(express.static("public"));
 
 app.listen(3000, () => {

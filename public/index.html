@@ -38,7 +38,7 @@
                     </td>
                     <td>
                     </td>
-                    <td><input type="submit" value="Envoyer" /></td>
+                    <td><input type="submit" value="Envoyer" disabled /></td>
                 </tr>
                 </tbody>
             </table>
@@ -141,6 +141,9 @@
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(form);
+        e.target.reset();
+        document.querySelector('input[type="submit"]').setAttribute('disabled', 'disabled');
+
         // Send data in FormData format
         const jsonData = JSON.stringify(Object.fromEntries(formData));
         fetch('/user', {
@@ -175,6 +178,15 @@
     }
 
     updateLanguage();
+
+    form.addEventListener('change', e => {
+        const formData = new FormData(form);
+        if (formData.get('nom') && formData.get('prenom') && formData.get('email')) {
+            document.querySelector('input[type="submit"]').removeAttribute('disabled');
+        } else {
+            document.querySelector('input[type="submit"]').setAttribute('disabled', 'disabled');
+        }
+    });
 </script>
 
 </html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Create new User</title>
+</head>
+
+<body>
+    <form id="registerForm">
+        <table>
+            <tbody>
+                <tr>
+                    <td>Username</td>
+                    <td><input type="text" name="username" id="username"></td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td><input type="password" name="password" id="password"></td>
+                </tr>
+                <tr>
+                    <td>Confirm Password</td>
+                    <td><input type="password" name="confirm_password" id="confirm_password"></td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td><input type="email" name="email" id="email"></td>
+                </tr>
+                <tr>
+                    <td>Submit</td>
+                    <td><input type="submit" value="Register"></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</body>
+
+<script>
+    const registerForm = document.getElementById('registerForm');
+
+    registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(registerForm);
+
+        const jsonData = formData.entries().reduce((acc, pair) => ({
+            ...acc,
+            [pair[0]]: pair[1]
+        }), {});
+
+        fetch('/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonData),
+        })
+            .then(response => {
+                if (response.status === 201) {
+                    alert('User created successfully');
+                    window.location.href = '/login.html';
+                } else {
+                    alert('User creation failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+</html>

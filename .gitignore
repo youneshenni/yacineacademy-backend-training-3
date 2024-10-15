@@ -4,3 +4,4 @@ data.csv
 logs
 phishing.csv
 util/autoincrement/incrementers
+data/*
