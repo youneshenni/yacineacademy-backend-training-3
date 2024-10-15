@@ -51,7 +51,7 @@
 
     <form>
         <fieldset>
-            <legend id="languageLegend">Choose langauge</legend>
+            <legend id="languageLegend">Choose language</legend>
             <select name="language" id="language">
                 <option value="en-US">English</option>
                 <option value="fr-FR">Français</option>
@@ -160,17 +160,21 @@
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(() => {
-            const translations = {
-                'en-US': 'Choose language',
-                'fr-FR': "Choisissez votre langue",
-                'ar-DZ': "اختيار اللغة"
-            }
-            const chosenLanguage = document.cookie.split(';').find(x => x.startsWith('language'))?.split('=')[1];
-
-            document.getElementById('languageLegend').innerText = translations[chosenLanguage];
-        })
+        }).then(updateLanguage)
     })
+
+    function updateLanguage() {
+        const translations = {
+            'en-US': 'Choose language',
+            'fr-FR': "Choisissez votre langue",
+            'ar-DZ': "اختيار اللغة"
+        }
+        const chosenLanguage = document.cookie.split(';').find(x => x.startsWith('language'))?.split('=')[1];
+        document.getElementById('language').value = chosenLanguage;
+        document.getElementById('languageLegend').innerText = translations[chosenLanguage];
+    }
+
+    updateLanguage();
 </script>
 
 </html>

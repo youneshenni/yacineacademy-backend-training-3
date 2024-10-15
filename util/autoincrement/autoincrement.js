@@ -1,4 +1,4 @@
-import { existsSync, writeFileSync, readFileSync } from 'fs'
+import { existsSync, writeFileSync, readFileSync, mkdirSync } from 'fs'
 
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +8,8 @@ export default class AutoIncrementer {
     constructor(incrementerName, initialValue = 0) {
         if (typeof incrementerName !== 'string') throw new Error('incrementerName must be a string');
         this.incrementerName = incrementerName;
+        if (!existsSync(`${__dirname}/incrementers`))
+            mkdirSync(`${__dirname}/incrementers`);
         if (!existsSync(`${__dirname}/incrementers/${incrementerName}.txt`))
             writeFileSync(`${__dirname}/incrementers/${incrementerName}.txt`, initialValue.toString());
         this.currentValue = parseInt(readFileSync(`${__dirname}/incrementers/${incrementerName}.txt`).toString());

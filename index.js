@@ -3,7 +3,7 @@ import userRouter from "./user/api.js";
 import morganMiddleware from "./util/log/morgan.js";
 import Logger from "./util/log/winston.js";
 import cookieParser from 'cookie-parser';
-import { languageMiddleware, langaugeEndpoint } from "./middleware/langauge.js";
+import { languageMiddleware, languageEndpoint } from "./middleware/language.js";
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(cookieParser());
 
 app.use(languageMiddleware)
 
-app.post('/language', langaugeEndpoint);
+app.post('/language', languageEndpoint);
 
 app.use(morganMiddleware)
 
