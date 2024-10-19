@@ -9,10 +9,13 @@ import Logger from '../util/log/winston.js';
 import parseCsv from '../util/csvToJson.js';
 import AutoIncrementer from '../util/autoincrement/autoincrement.js';
 import jsonwebtoken from 'jsonwebtoken';
+import authMiddleware from '../middleware/auth.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const usersRouter = Router();
+
+usersRouter.use(authMiddleware);
 
 usersRouter.post('', (req, res) => {
     if (!req.body.nom || !req.body.prenom || !req.body.email) {
@@ -36,23 +39,6 @@ usersRouter.post('', (req, res) => {
 
 
 usersRouter.get("", (req, res) => {
-    const token = req.cookies.token;
-    if (!token) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-    try {
-        const payload = jsonwebtoken.verify(token, 'secret');
-        if (payload.username !== 'younes@gmail.com') {
-            res.status(401).send('Unauthorized');
-            return;
-        }
-    } catch (e) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-
     if (!existsSync(__dirname + "/../data/data.csv"))
         writeFileSync(__dirname + "/../data/data.csv", "ID,Nom,Prénom,Email");
     const csvBuffer = readFileSync(__dirname + "/../data/data.csv");
