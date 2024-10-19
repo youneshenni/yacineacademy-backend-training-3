@@ -172,7 +172,7 @@
             'fr-FR': "Choisissez votre langue",
             'ar-DZ': "اختيار اللغة"
         }
-        const chosenLanguage = document.cookie.split(';').find(x => x.startsWith('language'))?.split('=')[1];
+        const chosenLanguage = document.cookie.split(';').find(x => x.trim().startsWith('language'))?.split('=')[1];
         document.getElementById('language').value = chosenLanguage;
         document.getElementById('languageLegend').innerText = translations[chosenLanguage];
     }
