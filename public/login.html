@@ -35,8 +35,7 @@
         e.preventDefault();
 
         const formData = new FormData(loginForm);
-
-        const jsonData = formData.entries().reduce((acc, pair) => ({
+        const jsonData = [...formData.entries()].reduce((acc, pair) => ({
             ...acc,
             [pair[0]]: pair[1]
         }), {});
@@ -56,7 +55,6 @@
                 }
             })
             .then(data => {
-                console.log(data);
                 window.location.href = '/index.html';
             })
             .catch(error => {

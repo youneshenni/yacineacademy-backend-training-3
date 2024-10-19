@@ -51,15 +51,25 @@ authRouter.post('/login', (req, res) => {
         return;
     }
     if (compareSync(req.body.password, user.password)) {
-        const token = jsonwebtoken.sign({
-            id: user.id,
+        const accessToken = jsonwebtoken.sign({
+            id: user.ID,
             username: user.username,
             email: user.email
-        }, 'secret', {
-            expiresIn: '1h'
+        }, process.env.JWT_ACCESS_SECRET, {
+            expiresIn: '10s'
         });
 
-        res.cookie('token', token, {
+        const refreshToken = jsonwebtoken.sign({
+            id: user.ID,
+        }, process.env.JWT_REFRESH_SECRET, {
+            expiresIn: '20s'
+        });
+
+        res.cookie('refresh', refreshToken, {
+            httpOnly: true,
+        })
+
+        res.cookie('token', accessToken, {
             httpOnly: true
         });
 
@@ -70,5 +80,38 @@ authRouter.post('/login', (req, res) => {
 
 });
 
+
+authRouter.post('/refresh', (req, res) => {
+    const refreshToken = req.cookies.refresh;
+    if (!refreshToken) {
+        res.clearCookie('refresh')
+        res.clearCookie('token')
+        return res.status(401).send("Unauthorized");
+    }
+    try {
+        const tokenData = jsonwebtoken.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        const users = parseCsv(readFileSync(__dirname + "/../data/users.csv").toString());
+        const user = users.find(user => user.ID === tokenData.id);
+        const newAccessToken = jsonwebtoken.sign({
+            id: user.ID,
+            username: user.username,
+            email: user.email
+        }, process.env.JWT_ACCESS_SECRET, {
+            expiresIn: '10s'
+        })
+        const newRefreshToken = jsonwebtoken.sign({
+            id: user.ID,
+        }, process.env.JWT_REFRESH_SECRET, {expiresIn: '20s'});
+
+        res.cookie('token', newAccessToken);
+        res.cookie('refresh', newRefreshToken);
+        res.status(200).send('OK');
+    } catch(e) {
+        console.error(e);
+        res.clearCookie('refresh')
+        res.clearCookie('token')
+        return res.status(401).send("Unauthorized")
+    }
+})
 
 export default authRouter;

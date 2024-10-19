@@ -1,10 +1,12 @@
 import express from "express";
+import './util/env.js'
 import userRouter from "./user/api.js";
 import morganMiddleware from "./util/log/morgan.js";
 import Logger from "./util/log/winston.js";
 import cookieParser from 'cookie-parser';
 import { languageMiddleware, languageEndpoint } from "./middleware/language.js";
 import authRouter from "./auth/api.js";
+
 
 const app = express();
 
@@ -29,3 +31,4 @@ app.use(express.static("public"));
 app.listen(3000, () => {
   Logger.info("Server is running on http://localhost:3000");
 });
+

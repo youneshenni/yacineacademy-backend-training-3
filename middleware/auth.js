@@ -7,7 +7,7 @@ export default function authMiddleware(req, res, next) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        const payload = jsonwebtoken.verify(token, 'secret');
+        const payload = jsonwebtoken.verify(token, process.env.JWT_ACCESS_SECRET);
         return next();
     } catch (e) {
         switch(e.name) {
