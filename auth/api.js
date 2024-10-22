@@ -56,13 +56,13 @@ authRouter.post('/login', (req, res) => {
             username: user.username,
             email: user.email
         }, process.env.JWT_ACCESS_SECRET, {
-            expiresIn: '10s'
+            expiresIn: process.env.JWT_ACCESS_EXPIRATION
         });
 
         const refreshToken = jsonwebtoken.sign({
             id: user.ID,
         }, process.env.JWT_REFRESH_SECRET, {
-            expiresIn: '20s'
+            expiresIn: process.env.JWT_REFRESH_EXPIRATION
         });
 
         res.cookie('refresh', refreshToken, {
@@ -97,16 +97,16 @@ authRouter.post('/refresh', (req, res) => {
             username: user.username,
             email: user.email
         }, process.env.JWT_ACCESS_SECRET, {
-            expiresIn: '10s'
+            expiresIn: process.env.JWT_ACCESS_EXPIRATION
         })
         const newRefreshToken = jsonwebtoken.sign({
             id: user.ID,
-        }, process.env.JWT_REFRESH_SECRET, {expiresIn: '20s'});
+        }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
 
         res.cookie('token', newAccessToken);
         res.cookie('refresh', newRefreshToken);
         res.status(200).send('OK');
-    } catch(e) {
+    } catch (e) {
         console.error(e);
         res.clearCookie('refresh')
         res.clearCookie('token')

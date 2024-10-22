@@ -61,16 +61,12 @@
     </form>
 </body>
 <script>
+
     function getData() {
-        fetch('/user').then(res => 
-    {
-        if (res.status === 200) return res;
-        if (res.status === 401) return fetch('/auth/refresh', {method: "POST"}).then(res => {
-            if (res.status === 200) return fetch('/user');
-            throw new Error('Invalid refresh token');
-        })
-        throw new Error("Invalid response code")
-    }
+        fetch('/user').then(res => {
+            if (res.status === 200) return res;
+            throw new Error("Invalid response code")
+        }
         ).then(res => res.json()).then(data => {
             const table = document.getElementById('data');
             const thead = table.children[0];
@@ -141,7 +137,7 @@
                     tbody.appendChild(tr);
                 })
             }
-        }).catch(() => window.location = '/login.html')
+        })
 
     }
 
