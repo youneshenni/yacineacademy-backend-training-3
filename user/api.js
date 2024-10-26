@@ -16,7 +16,7 @@ const usersRouter = Router();
 
 usersRouter.use(authMiddleware);
 
-usersRouter.post('', (req, res) => {
+usersRouter.post('', hasPermission('create'), (req, res) => {
     console.log(res.locals);
     if (!req.body.nom || !req.body.prenom || !req.body.email) {
         Logger.error(`Missing fields`);
@@ -38,7 +38,7 @@ usersRouter.post('', (req, res) => {
 })
 
 
-usersRouter.get("", (req, res) => {
+usersRouter.get("", hasPermission('view'), (req, res) => {
     if (!existsSync(__dirname + "/../data/data.csv"))
         writeFileSync(__dirname + "/../data/data.csv", "ID,Nom,Prénom,Email");
     const csvBuffer = readFileSync(__dirname + "/../data/data.csv");
@@ -62,7 +62,7 @@ usersRouter.get('/:id', (req, res) => {
     res.status(200).json(user);
 });
 
-usersRouter.put('/:id', (req, res) => {
+usersRouter.put('/:id', hasPermission('edit'), (req, res) => {
     const id = req.params.id;
     const users = parseCsv(readFileSync(__dirname + "/../data/data.csv").toString());
     const userIndex = users.findIndex(user => user.ID === id);
