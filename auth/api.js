@@ -22,12 +22,12 @@ authRouter.post('/register', (req, res) => {
         return;
     }
 
-    if (ensureFileExists(`${__dirname}/../data/users.csv`, 'ID,username,email,password')) {
+    if (ensureFileExists(`${__dirname}/../data/users.csv`, 'ID,username,email,password,role')) {
         const autoIncrementer = new AutoIncrementer("users");
         const newRowId = autoIncrementer.increment();
         const salt = genSaltSync(10);
         const hash = hashSync(req.body.password, salt);
-        const appendedLine = `\n${newRowId},${req.body.username},${req.body.email},${hash}`;
+        const appendedLine = `\n${newRowId},${req.body.username},${req.body.email},${hash},user`;
         appendFileSync(
             __dirname + "/../data/users.csv",
             appendedLine

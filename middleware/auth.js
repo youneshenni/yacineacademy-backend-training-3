@@ -13,6 +13,11 @@ export default function authMiddleware(req, res, next) {
     }
     try {
         const payload = jsonwebtoken.verify(token, process.env.JWT_ACCESS_SECRET);
+        res.locals = {
+            username: payload.username,
+            email: payload.email,
+            id: payload.id
+        };
         return next();
     } catch (e) {
         if (e.name === "TokenExpiredError") {
@@ -39,6 +44,7 @@ export default function authMiddleware(req, res, next) {
 
                 res.cookie('token', newAccessToken);
                 res.cookie('refresh', newRefreshToken);
+                res.locals = { username: user.username, email: user.email, id: user.ID };
                 next();
             } catch (e) {
                 console.error(e);
@@ -47,7 +53,7 @@ export default function authMiddleware(req, res, next) {
                 return res.status(401).send("Unauthorized")
             }
         }
-        switch (e.name) {
+        else switch (e.name) {
             case "JsonWebTokenError":
                 res.clearCookie('token')
                 return res.status(401).send("Invalid token");
@@ -64,5 +70,35 @@ export default function authMiddleware(req, res, next) {
                 return res.status(500).send('Internal Server Error');
         }
 
+    }
+}
+
+
+export function adminMiddleware(req, res, next) {
+    if (!res.locals?.id) {
+        Logger.error('Admin middleware called without user');
+        return res.status(500).send('Internal Server Error');
+    }
+    const users = parseCsv(readFileSync(__dirname + "/../data/users.csv").toString());
+    const user = users.find(user => user.ID === res.locals.id);
+    if (user.role !== 'admin') {
+        return res.status(403).send('Forbidden');
+    }
+    next();
+}
+
+export function hasPermission(permissionID) {
+    return (req, res, next) => {
+        if (!res.locals?.id) {
+            Logger.error('Permission middleware called without user');
+            return res.status(500).send('Internal Server Error');
+        }
+        const users = parseCsv(readFileSync(__dirname + "/../data/users.csv").toString());
+        const user = users.find(user => user.ID === res.locals.id);
+        const permissionsData = JSON.parse(readFileSync(__dirname + "/../data/permissions.json").toString());
+        const userPermissions = permissionsData[user.role];
+        if (!userPermissions.includes(permissionID)) {
+            return res.status(403).send('Forbidden');
+        } next();
     }
 }

@@ -8,8 +8,7 @@ import { fileURLToPath } from 'node:url';
 import Logger from '../util/log/winston.js';
 import parseCsv from '../util/csvToJson.js';
 import AutoIncrementer from '../util/autoincrement/autoincrement.js';
-import jsonwebtoken from 'jsonwebtoken';
-import authMiddleware from '../middleware/auth.js'
+import authMiddleware, { adminMiddleware, hasPermission } from '../middleware/auth.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -18,6 +17,7 @@ const usersRouter = Router();
 usersRouter.use(authMiddleware);
 
 usersRouter.post('', (req, res) => {
+    console.log(res.locals);
     if (!req.body.nom || !req.body.prenom || !req.body.email) {
         Logger.error(`Missing fields`);
         res.status(400).send('Missing fields');
@@ -26,10 +26,10 @@ usersRouter.post('', (req, res) => {
     if (!existsSync(__dirname + "/../data"))
         mkdirSync(__dirname + "/../data");
     if (!existsSync(__dirname + "/../data/data.csv"))
-        writeFileSync(__dirname + "/../data/data.csv", "ID,Nom,Prénom,Email");
-    const autoIncrementer = new AutoIncrementer("users");
+        writeFileSync(__dirname + "/../data/data.csv", "ID,Nom,Prénom,Email,");
+    const autoIncrementer = new AutoIncrementer("data");
     const newRowId = autoIncrementer.increment();
-    const appendedLine = `\n${newRowId},${req.body.nom},${req.body.prenom},${req.body.email}`;
+    const appendedLine = `\n${newRowId},${req.body.nom},${req.body.prenom},${req.body.email},user`;
     appendFileSync(
         __dirname + "/../data/data.csv",
         appendedLine
@@ -44,7 +44,7 @@ usersRouter.get("", (req, res) => {
     const csvBuffer = readFileSync(__dirname + "/../data/data.csv");
     res.status(200).json(parseCsv(csvBuffer.toString()));
 });
-usersRouter.delete('/:id', (req, res) => {
+usersRouter.delete('/:id', hasPermission('delete'), (req, res) => {
     const id = req.params.id;
     const users = parseCsv(readFileSync(__dirname + "/../data/data.csv").toString());
     const filteredUsers = users.filter(user => user.ID !== id);
